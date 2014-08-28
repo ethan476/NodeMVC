@@ -1,12 +1,12 @@
-function NodeController() {
-    console.log("NodeController()");
+function Model() {
+    Model.instance = this;
 }
 
-NodeController.prototype.myMethod = function() {
+Model.prototype.myMethod = function() {
     console.log("default");
 }
 
-NodeController.child = function(child) {
+Model.child = function(child) {
     for (var property in this.prototype) {
         if (typeof child[property] === "undefined") {
             child[property] = this.prototype[property];
@@ -15,4 +15,4 @@ NodeController.child = function(child) {
     child["super"] = this.prototype.constructor;
 };
 
-global.NodeController = NodeController;
+global.Model = Model;

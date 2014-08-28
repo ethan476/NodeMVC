@@ -1,0 +1,16 @@
+{
+    "defaults": {
+        "controller": "index"
+    },
+    "overrides": {
+        "error": {
+            "controller": "error",
+            "method": {
+                "404": "http404"
+            },
+            "args": {
+                "a": "b"
+            }
+        }
+    }
+}

@@ -1,13 +1,10 @@
-function IndexController() {
-    NodeController.child(this);
-    this.super();
-    
-    
+function indexController() {
+    MVCController.child(this);
+    this.super(); 
 }
 
-IndexController.prototype.myMethod = function() {
-    console.log("Override");
+indexController.prototype.index = function() {
+    Output.instance.append("test");
 }
 
-
-global.Controller = IndexController;
+global.Controller = indexController;

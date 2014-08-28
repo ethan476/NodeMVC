@@ -1,0 +1,13 @@
+{
+    "paths": {
+        "controllers": [
+            "./app/controllers/"
+        ],
+        "models": [
+            
+        ],
+        "views": [
+            
+        ]
+    }
+}
