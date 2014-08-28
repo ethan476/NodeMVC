@@ -1,0 +1,20 @@
+{
+  "name" : "NodeMVC",
+  "version" : "0.0.1",
+  "main" : "./app.js",
+  "author" : {
+    "name" : "Ethan Sattler",
+    "email" : "mcdasethan2@gmail.com"
+  },
+  "keywords" : [ ],
+  "licenses" : {
+    "type" : "apache20"
+  },
+  "repository" : {
+    "type" : "git",
+    "url" : "git://github.com/ethan476/NodeMVC.git"
+  },
+  "bugs" : {
+    "url" : "http://github.com/ethan476/NodeMVC/issues"
+  }
+}
