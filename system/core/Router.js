@@ -20,16 +20,17 @@ Router.prototype.route = function(request, response, callback) {
 
     self.buildRoutingInfo(splitUri, function(err, info) {
         if (err) {
-            
+            callback(err);
         } else {
             self.loadController(info, function(err, controller) {
                 if (err) {
-                    
+                    callback(err);
                 } else {
                     if (typeof controller[info["method"]] === "function") {
                         controller[info["method"]].apply(controller, info["args"]);
+                        callback(false);
                     } else {
-                    
+                        callback(404);
                     }
                 }
             });
@@ -98,10 +99,12 @@ Router.prototype.loadController = function(info, callback) {
             if (fs.existsSync(path)) {
                 require(path);
                 callback(false, new Controller());
+            } else {
+                callback(404, undefined);
             }
         }
     } else {
-        
+        callback(500, undefined);
     }
 };
 

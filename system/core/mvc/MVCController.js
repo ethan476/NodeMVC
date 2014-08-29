@@ -1,5 +1,7 @@
 function MVCController() {
     MVCController.instance = this;
+    
+    this.output = Output.instance;
 }
 
 MVCController.child = function(child) {

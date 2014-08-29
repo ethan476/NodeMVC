@@ -4,7 +4,6 @@ function NodeMVC() {
     for (var i = 0; i < NodeMVC.requirements.length; i++) {
         require(NodeMVC.requirements[i]);
     }
-    this.output = new Output();
     this.router = new Router();
     this.configuration = new Configuration();
     this.configuration.load("routes", "./system/configurations/routes.json");
@@ -15,15 +14,12 @@ NodeMVC.prototype.listen = function(port) {
     var self = this;
     this.port = port;
     this.http = http.createServer(function(request, response) {
+        var output = new Output();
         self.router.route(request, response, function(err) {
-            if (err) {
-                
+            if (err) { 
+                output.build(response, "Error code: " + err);
             } else {
-                response.writeHead(200, {
-                    'Content-type': 'text/html'
-                });
-                response.write(Output.instance.build());
-                response.end();
+                output.build(response);
             }
         });
     }).listen(this.port);
