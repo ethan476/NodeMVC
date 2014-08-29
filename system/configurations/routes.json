@@ -5,7 +5,7 @@
     "overrides": {
         "error": {
             "controller": "error",
-            "method": {
+            "methods": {
                 "404": "http404"
             },
             "args": {

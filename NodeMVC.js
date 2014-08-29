@@ -17,7 +17,7 @@ NodeMVC.prototype.listen = function(port) {
     this.http = http.createServer(function(request, response) {
         self.router.route(request, response, function(err) {
             if (err) {
-
+                
             } else {
                 response.writeHead(200, {
                     'Content-type': 'text/html'

@@ -4,7 +4,7 @@ function indexController() {
 }
 
 indexController.prototype.index = function() {
-    Output.instance.append("test");
-}
+
+};
 
 global.Controller = indexController;

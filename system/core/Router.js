@@ -6,6 +6,7 @@ function Router() {
 }
 
 Router.prototype.route = function(request, response, callback) {
+    var self = this;
     var uri = url.parse(request.url).pathname;
 
     if (uri.charAt(0) === '/') {
@@ -16,88 +17,92 @@ Router.prototype.route = function(request, response, callback) {
     }
 
     var splitUri = uri.split("/");
-    var routingData = this.parseController(splitUri);
 
-    if (routingData.length === 0) {
-        callback(true);
-    }
-
-    var configuration = Configuration.instance["configuration"];
-    if (typeof configuration !== "undefined") {
-        if (typeof configuration["paths"] !== "undefined") {
-            if (typeof configuration["paths"]["controllers"] !== "undefined") {
-                for (var i = 0; i < configuration["paths"]["controllers"].length; i++) {
-                    configuration["paths"]["controllers"][i] += (routingData["controller"] + ".js");
-                    if (configuration["paths"]["controllers"][i].charAt(0) !== '/') {
-                        configuration["paths"]["controllers"][i] = process.cwd() + "/" + configuration["paths"]["controllers"][i];
-                    }
-                    if (fs.existsSync(configuration["paths"]["controllers"][i])) {
-                        require(configuration["paths"]["controllers"][i]);
-                        if (routingData["method"] === "" || typeof routingData["method"] === "undefined") {
-                            routingData["method"] = "index";
-                        }
-
-                        if (typeof Controller.prototype[routingData["method"]] !== "undefined") {
-                            var controller = new Controller();
-                            controller[routingData["method"]].apply(controller, routingData["args"]);
-                            callback(false);
-                        }
-                        break;
+    self.buildRoutingInfo(splitUri, function(err, info) {
+        if (err) {
+            
+        } else {
+            self.loadController(info, function(err, controller) {
+                if (err) {
+                    
+                } else {
+                    if (typeof controller[info["method"]] === "function") {
+                        controller[info["method"]].apply(controller, info["args"]);
                     } else {
-                        callback(true);
+                    
                     }
                 }
-            } else {
-                callback(true);
-            }
-        } else {
-            callback(true);
+            });
         }
-    } else {
-        callback(true);
-    } 
+    });
 };
 
-Router.prototype.parseController = function(splitUri) {
-    var routingData = {};
+Router.prototype.buildRoutingInfo = function(splitUri, callback) {
+    var info = {
+        "controller": splitUri[0]
+    };
 
-    if (typeof Configuration.instance["routes"] !== "undefined") {
-        routingData["controller"] = splitUri[0];
-        if (routingData["controller"] === "") {
-            if (typeof Configuration.instance["routes"]["defaults"] !== "undefined") {
-                if (typeof Configuration.instance["routes"]["defaults"]["controller"] !== "undefined")
-                    routingData["controller"] = Configuration.instance["routes"]["defaults"]["controller"];
+    if (splitUri.length > 1) {
+        info["method"] = splitUri[1];
+    } else {
+        info["method"] = "index";
+    }
+    
+    if (splitUri.length > 2) {
+        info["args"] = splitUri.slice(2);
+    } else {
+        info["args"] = [];
+    }
+
+    var overrides = Configuration.instance.get("routes", "overrides", info["controller"]);
+    if (typeof overrides === "object") {
+        if (typeof overrides["controller"] === "string") {
+            info["controller"] = overrides["controller"];
+        }
+
+        if (typeof overrides["methods"] === "object") {
+            for (var method in overrides["methods"]) {
+                if (typeof method === "string") {
+                    if (method === info["method"]) {
+                        info["method"] = method;
+                        break;
+                    }
+                }
             }
         }
-    }
-    if (splitUri.length > 1) {
-        routingData["method"] = splitUri[1];
-    }
-    if (splitUri.length > 2) {
-        routingData["args"] = splitUri.slice(2);
-    }
-
-
-    if (typeof Configuration.instance["routes"]["overrides"] !== "undefined") {
-        var override = Configuration.instance["routes"]["overrides"][routingData["controller"]];
-        if (typeof override !== "undefined") {
-            var controller = override["controller"];
-            var method = override["method"];
-            var args = override["args"];
-
-            if (typeof method[routingData["method"]] !== "undefined") {
-                routingData["method"] = method[routingData["method"]];
-            }
-
-            for (var i = 0; i < routingData["args"].length; i++) {
-                if (typeof args[routingData["args"][i]] !== "undefined") {
-                    routingData["args"][i] = args[routingData["args"][i]];
-                    break;
+        
+        if (typeof overrides["args"] === "object") {
+            for(var i = 0; i < info["args"].length; i++) {
+                for(var arg in overrides["args"]) {
+                    if (info["args"][i] === arg) {
+                        info["args"][i] = overrides["args"][arg];
+                    }
                 }
             }
         }
     }
-    return routingData;
+    callback(false, info);
+};
+
+Router.prototype.loadController = function(info, callback) {
+    var paths = Configuration.instance.get("configuration", "paths", "controllers");
+
+    if (typeof paths === "object") {
+        for(var i = 0; i < paths.length; i++) {
+            var path = paths[i] + "/" + info["controller"] + ".js";
+            
+            if (path.charAt(0) !== '/') {
+                path = process.cwd() + "/" + path;
+            }
+            
+            if (fs.existsSync(path)) {
+                require(path);
+                callback(false, new Controller());
+            }
+        }
+    } else {
+        
+    }
 };
 
 global.Router = Router;
