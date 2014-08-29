@@ -7,10 +7,13 @@ function NodeMVC(path) {
         NodeMVC.mvcPath = "";
     }
     
-    for (var i = 0; i < NodeMVC.requirements.length; i++) {
-        require(NodeMVC.requirements[i]);
-    }
+    require("./system/core/Loader.js");
+    
+    this.loader = new Loader();
+    this.loader.preLoad();
+    
     this.router = new Router();
+    
     this.configuration = new Configuration();
     this.configuration.load("routes", "./system/configurations/routes.json");
     this.configuration.load("configuration", "./system/configurations/configuration.json");
@@ -30,12 +33,5 @@ NodeMVC.prototype.listen = function(port) {
         });
     }).listen(this.port);
 };
-
-NodeMVC.requirements = [
-    "./system/core/mvc/MVCController.js",
-    "./system/core/Output.js",
-    "./system/core/Router.js",
-    "./system/core/Configuration.js"
-];
 
 global.NodeMVC = NodeMVC;

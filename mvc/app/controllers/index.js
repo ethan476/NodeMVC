@@ -4,7 +4,8 @@ function indexController() {
 }
 
 indexController.prototype.index = function() {
-    Output.instance.append("Testing");
+    this.loader.library("test");
+    Output.instance.append("<h2>Hello, World!</h2>");
 };
 
 global.Controller = indexController;
