@@ -4,7 +4,7 @@ function Configuration() {
 
 Configuration.prototype.load = function(name, path) {
     if (path.charAt(0) !== '/') {
-        this[name] = require(process.cwd() + "/" + path);
+        this[name] = require(process.cwd() + "/" + NodeMVC.mvcPath + "/" + path);
     } else {
         this[name] = require(path);
     }

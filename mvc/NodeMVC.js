@@ -1,6 +1,12 @@
 var http = require("http");
 
-function NodeMVC() {
+function NodeMVC(path) {
+    if (typeof path === "string") {
+        NodeMVC.mvcPath = path;
+    } else {
+        NodeMVC.mvcPath = "";
+    }
+    
     for (var i = 0; i < NodeMVC.requirements.length; i++) {
         require(NodeMVC.requirements[i]);
     }

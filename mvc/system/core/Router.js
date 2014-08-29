@@ -93,7 +93,7 @@ Router.prototype.loadController = function(info, callback) {
             var path = paths[i] + "/" + info["controller"] + ".js";
             
             if (path.charAt(0) !== '/') {
-                path = process.cwd() + "/" + path;
+                path = process.cwd() + "/" + NodeMVC.mvcPath + "/" + path;
             }
             
             if (fs.existsSync(path)) {
